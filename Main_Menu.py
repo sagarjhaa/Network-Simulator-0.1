@@ -132,7 +132,7 @@ class Simulator(Application):
         self.layers = []
 
         self.fr_Simulator = Frame(self.fr_first,background="pink",bd=10)
-        self.fr_Simulator.grid(row=1,column=0,columnspan=2,sticky=(W,N),padx=5,pady=20)
+        self.fr_Simulator.grid(row=1,column=0,columnspan=2,sticky=(W,N,E),padx=5,pady=20)
 
         self.btn_File = Button(self.fr_Simulator,text="File",command = self.__openShpfile)
         self.btn_File.grid(row=0,column=0,sticky=(W),ipadx=20)
@@ -306,7 +306,7 @@ class Analysis(Application):
         self.layers = []
 
         self.fr_Analysis = Frame(self.fr_first,background="green",bd=10)
-        self.fr_Analysis.grid(row=1,column=0,columnspan=2,sticky=(W,N),padx=5,pady=20)
+        self.fr_Analysis.grid(row=1,column=0,columnspan=2,sticky=(W,N,E),padx=5,pady=20)
 
         self.btn_File = Button(self.fr_Analysis,text="File",command = self.__openShpfile)
         self.btn_File.grid(row=0,column=0,sticky=(W),ipadx=20)
