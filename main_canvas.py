@@ -82,11 +82,9 @@ class MainCanvas(object):
         if ratio>ratioy:
             ratio = ratioy
 
-
-
         # self.mainCanvas.create_rectangle(int((minX)*ratio)+margin_x/2,int((maxX)*ratio)+margin_x/2,int((maxY)*ratio)+margin_y/2,int((minY)*ratio)+margin_y/2)
 
-        print "ratio = ",ratio
+        #print "ratio = ",ratio
 
         if shp_type == SHP_TYPE_POINT:
             self.__drawPoints(minX, minY, maxX, maxY, ratio)
@@ -147,6 +145,10 @@ class MainCanvas(object):
         """
         Draw polygons on the canvas
         """
+
+        self.polygon_dict = {}
+        self.tempid = 1
+
         itemId = 1
         tag_count = 0
         for polygon in self.shapes:
@@ -167,7 +169,7 @@ class MainCanvas(object):
             """
             polyline.partsIndex is a tuple data type holding the starting points for each
             part. For example, if the polyline.partsIndex of a polyline equals to (0, 4, 9),
-            and the total points, which is calcuate by len(polyline.points) equals to 13.
+            and the total points, which is calculate by len(polyline.points) equals to 13.
             This means that the polyline has three parts, and the each part would have the points
             as follows.
 
@@ -196,6 +198,7 @@ class MainCanvas(object):
             """
 
             for k in range(polygon.partsNum):
+                self.polygon_dict[self.tempid]= []
 
                 #get the end sequence number of points in the part
                 if (k==polygon.partsNum-1):
@@ -215,6 +218,11 @@ class MainCanvas(object):
                     tempYlist.append(xylist[m*2+1])
 
                 self.PolyInfo.parts[k]=tempXYlist
+
+                self.polygon_dict[self.tempid].append([min(tempXlist),max(tempXlist)])
+                self.polygon_dict[self.tempid].append([min(tempYlist),max(tempYlist)])
+                #print self.polygon_dict[self.tempid]
+                self.tempid +=1
 
 
                 startIndex = polygon.partsIndex[k] #start index for our positive polygon.

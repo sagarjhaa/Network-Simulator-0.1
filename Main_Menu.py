@@ -13,6 +13,7 @@ except:
     import dbfload as dbf
     from   main_canvas import MainCanvas,GenerateNetwork
     from textAnalysis import *
+    from SimulatorSettings import *
 
 #CONSTANTS FOR GLOBAL USE
 ROOT = None
@@ -84,7 +85,7 @@ class Application:
 
         self.text = Text(f1)
         self.canvas = Canvas(self.f2)
-        self.canvas.configure(background="grey")
+        self.canvas.configure(background="black")
 
         self.text.pack(expand=1,fill=BOTH,)
         self.canvas.pack(expand=1,fill=BOTH)
@@ -92,6 +93,9 @@ class Application:
         self.root.grid_rowconfigure(0, weight=1)
         self.root.grid_columnconfigure(0, weight=0)
         self.root.grid_columnconfigure(1, weight=3)
+
+        #rect = self.canvas.create_rectangle(10,10,1560,950,outline="#fb0")
+
 
     def __showAnalysisControls(self):
 
@@ -140,15 +144,15 @@ class Simulator(Application):
         lb_Attribute = Label(self.fr_Simulator,text="Attributes",background=BACKGROUND)
         lb_Attribute.grid(row=1,column = 0,sticky=(W),pady=20)
 
-        self.var = IntVar()
-        self.c = Checkbutton(self.fr_Simulator, text="Add Layer", variable=self.var,background=BACKGROUND)
-        self.c.grid(row=3,column=0,sticky=(W),pady = 10)
+        # self.var = IntVar()
+        # self.c = Checkbutton(self.fr_Simulator, text="Add Layer", variable=self.var,background=BACKGROUND)
+        # self.c.grid(row=3,column=0,sticky=(W),pady = 10)
 
         self.lb_FileName = Label(self.fr_Simulator,text="No input file!!",anchor=W,background=BACKGROUND)
         self.lb_FileName.grid(row=0,column = 1,sticky=(E),padx=20,ipadx=40)
         self.lb_FileName.configure(width=7)
 
-        self.btn_Draw = Button(self.fr_Simulator,text="Visulize",command = self.__UpdateCanvas)
+        self.btn_Draw = Button(self.fr_Simulator,text="Visualize",command = self.__UpdateCanvas)
         self.btn_Draw.grid(row=3,column=1,sticky=(E,W),pady = 10,padx = 20,ipadx=40)
         self.btn_Draw.configure(width=7)
 
@@ -177,7 +181,13 @@ class Simulator(Application):
         self.btn_moveDown.grid(row=5,column=3,sticky=(E),pady=10,padx=10)
         self.btn_moveDown.configure(width=5)
 
+        self.fr_sub1 = Frame(self.fr_Simulator,background=BACKGROUND)
+        self.fr_sub1.grid(row=5,column=0,columnspan=4,sticky=(W),padx=5,pady=20)
+
+        self.btn_simWidget = Button(self.fr_sub1,text="Simulation Settings",command = self.__createSimWidget,state="disabled")
+        self.btn_simWidget.grid(row=1,column=0,sticky=(E),padx=5,pady=5)
         # writeCalculations(self.text,self.__openShpfile.__doc__,True)
+
 
     def moveRight(self):
         self.canvas.delete(ALL)
@@ -255,33 +265,40 @@ class Simulator(Application):
             self.attributeSelected =  self.variable.get()
             self.datalist = self.dbfdata[self.attributeSelected]
 
-            if self.var.get():
-                self.layers.append([self.shapes,self.shp_type,self.attributeSelected,self.datalist])
-                self.Pre_canvas.addLayer(self.shapes, self.shp_type, self.attributeSelected,self.datalist)
-            else:
-                self.canvas.delete(ALL)
-                self.layers = []
-                self.layers.append([1,self.shapes,self.bbox,self.shp_type,self.root,self.attributeSelected,self.datalist,self.canvas])
-                self.Pre_canvas=MainCanvas(self.shapes,self.bbox,self.shp_type,self.root,self.attributeSelected,self.datalist,self.canvas,self.canvasConfig)
+            self.layers = []
+            self.layers.append([1,self.shapes,self.bbox,self.shp_type,self.root,self.attributeSelected,self.datalist,self.canvas])
+            self.Pre_canvas=MainCanvas(self.shapes,self.bbox,self.shp_type,self.root,self.attributeSelected,self.datalist,self.canvas,self.canvasConfig)
+            self.btn_simWidget.configure(state="active")
 
-        except:
-            writeCalculations(self.text,"Please Select the file and then Visualise" ,True,NB)
+            # if self.var.get():
+            #     self.layers.append([self.shapes,self.shp_type,self.attributeSelected,self.datalist])
+            #     self.Pre_canvas.addLayer(self.shapes, self.shp_type, self.attributeSelected,self.datalist)
+            # else:
+            #     self.canvas.delete(ALL)
+            #     self.layers = []
+            #     self.layers.append([1,self.shapes,self.bbox,self.shp_type,self.root,self.attributeSelected,self.datalist,self.canvas])
+            #     self.Pre_canvas=MainCanvas(self.shapes,self.bbox,self.shp_type,self.root,self.attributeSelected,self.datalist,self.canvas,self.canvasConfig)
+
+        except Exception as e:
+            writeCalculations(self.text,e,True,NB)
 
 
     def __reDraw(self):
         try:
 
             self.canvasConfig = [canvasWidth,canvasHeight,margin_x,margin_y]
-            print self.canvasConfig
+            #print self.canvasConfig
             for i in range(len(self.layers)):
                 if self.layers[i][0]==1:
                     temp,self.shapes,self.bbox,self.shp_type,self.root,self.attributeSelected,self.datalist,self.canvas = self.layers[i]
                     self.Pre_canvas=MainCanvas(self.shapes,self.bbox,self.shp_type,self.root,self.attributeSelected,self.datalist,self.canvas,self.canvasConfig)
 
+
             for i in range(len(self.layers)):
                 if self.layers[i][0]<>1:
                     self.shapes,self.shp_type,self.attributeSelected,self.datalist = self.layers[i]
                     self.Pre_canvas.addLayer(self.shapes, self.shp_type, self.attributeSelected,self.datalist)
+
 
         except:
             writeCalculations(self.text,"Please Select the file and then Visualise" ,True,NB)
@@ -291,7 +308,11 @@ class Simulator(Application):
         for widget in self.fr_Simulator.winfo_children():
             widget.destroy()
 
-        # self.fr_Simulator.destry()
+
+
+    def __createSimWidget(self):
+
+        obj_simWidget = simulatorWidget(self.root,self.Pre_canvas)
 
 class Analysis(Application):
     def __init__(self,root,first_frame,canvas,text):
@@ -322,7 +343,7 @@ class Analysis(Application):
         self.lb_FileName.grid(row=0,column = 1,sticky=(E),padx=20,ipadx=40)
         self.lb_FileName.configure(width=7)
 
-        self.btn_Draw = Button(self.fr_Analysis,text="Visulize",command = self.__UpdateCanvas)
+        self.btn_Draw = Button(self.fr_Analysis,text="Visualize",command = self.__UpdateCanvas)
         self.btn_Draw.grid(row=3,column=1,sticky=(E,W),pady = 10,padx = 20,ipadx=40)
         self.btn_Draw.configure(width=7)
 
