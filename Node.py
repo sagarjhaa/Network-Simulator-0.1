@@ -21,10 +21,15 @@ class Node:
         self.lineItemNo = []
 
     # draw method for particles
-    def draw(self,canvas):
-        self.itemNo = canvas.create_oval(self.position[0],self.position[1],self.position[0]+PARTICLE_RADIUS,self.position[1]+PARTICLE_RADIUS,fill=self.color)
+    def draw(self,canvas,radius=0):
+        if radius == 0:
+            self.itemNo = canvas.create_oval(self.position[0],self.position[1],self.position[0]+PARTICLE_RADIUS,
+                                             self.position[1]+PARTICLE_RADIUS,fill=self.color)
+        else:
+            self.itemNo = canvas.create_oval(self.position[0],self.position[1],self.position[0]+radius,
+                                             self.position[1] + radius,fill=self.color)
 
-    #Update Coordinate
+#Update Coordinate
     def update(self,canvas):
         canvas.coords(self.itemNo,self.position[0],self.position[1],self.position[0]+PARTICLE_RADIUS,self.position[1]+PARTICLE_RADIUS)
 

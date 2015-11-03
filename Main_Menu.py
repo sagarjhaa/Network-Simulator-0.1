@@ -87,7 +87,7 @@ class Application:
         self.canvas = Canvas(self.f2)
         self.canvas.configure(background="black")
 
-        self.text.pack(expand=1,fill=BOTH,)
+        self.text.pack(expand=1,fill=BOTH)
         self.canvas.pack(expand=1,fill=BOTH)
 
         self.root.grid_rowconfigure(0, weight=1)
