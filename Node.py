@@ -3,20 +3,21 @@ Created on March 17, 2015
 
 @author: sagar jha
 '''
-PARTICLE_RADIUS = 15
+PARTICLE_RADIUS = 10
 class Node:
     '''
     classdocs
     '''
   
-    def __init__(self,position,color):
+    def __init__(self,id,position,color):
         '''
         Constructor
         '''
-        self.id=0
+        self.id=id
         self.position = position
         self.color = color
         self.itemNo = 0
+        self.followers = 0
 
     # draw method for particles
     def draw(self,canvas):
