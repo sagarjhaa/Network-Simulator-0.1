@@ -18,6 +18,7 @@ class Node:
         self.color = color
         self.itemNo = 0
         self.followers = 0
+        self.lineItemNo = []
 
     # draw method for particles
     def draw(self,canvas):
@@ -26,6 +27,13 @@ class Node:
     #Update Coordinate
     def update(self,canvas):
         canvas.coords(self.itemNo,self.position[0],self.position[1],self.position[0]+PARTICLE_RADIUS,self.position[1]+PARTICLE_RADIUS)
+
+
+    def draw_edges(self,canvas):
+        if len(self.followers) <> 0:
+            for eNode in self.followers:
+                itemNo = canvas.create_line(self.position[0],self.position[1],eNode.position[0],eNode.position[1],fill="red")
+                self.lineItemNo.append(itemNo)
 
 
     # string method for particles

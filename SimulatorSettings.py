@@ -80,7 +80,8 @@ class simulatorWidget():
                         follower.append(self.Nodes_List[EI.GetDstNId()])
             nodeid = node.GetId()
             self.Nodes_List[nodeid].followers = follower
-            print nodeid,follower
+            self.Nodes_List[nodeid].draw_edges(self.canvas)
+            #print nodeid,follower
 
     def draw(self):
         self.read_nodes()
@@ -125,9 +126,11 @@ class simulatorWidget():
         #     print node.id,str1
 
     def commDetection(self):
+        #print "Community Detection Function"
         g = {}
         for node in self.Nodes_List:
             g[node.id]=[]
+            #print node.id,node.followers
             for foll in node.followers:
                 g[node.id].append(foll.id)
         #print g
@@ -135,12 +138,13 @@ class simulatorWidget():
         graph.find_community()
         graph.change_color()
 
-
-
     def reset(self):
 
         for node in self.Nodes_List:
             self.canvas.delete(node.itemNo)
+            for edges in node.lineItemNo:
+                self.canvas.delete(edges)
+        self.Nodes_List = []
 
 class Graph():
     def __init__(self,g,Node_List,canvas):
@@ -177,7 +181,7 @@ class Graph():
                 self.c.add_descendants(node)
                 self.delete(node)
             self.total_community.append(self.c)
-            print self.c
+            #print self.c
         print "Completed finding community"
 
 
@@ -192,7 +196,7 @@ class Graph():
                 self.canvas.itemconfig(i,fill=a)
 
                 for foll in community.descendants:
-                    print parent,foll
+                    #print parent,foll
                     i = self.Node_List[foll].itemNo
                     self.canvas.itemconfig(i,fill=a)
 
@@ -228,7 +232,6 @@ class Community():
         if g.keys() <> 0 and len(self.descendants) < self.threshold:
             return True
         return False
-
 
 def maindraw():
     pass
