@@ -70,6 +70,7 @@ class simulatorWidget():
             y = rd.randint(direction[1][0],direction[1][1])
             p = Node(node.GetId(),[x,y], color)
             p.draw(self.canvas)
+            #print p.id,p.itemNo
             self.Nodes_List.append(p)
 
         for node in Graph.Nodes():
@@ -81,7 +82,7 @@ class simulatorWidget():
             nodeid = node.GetId()
             self.Nodes_List[nodeid].followers = follower
             self.Nodes_List[nodeid].draw_edges(self.canvas)
-            #print nodeid,follower
+            #print nodeid,len(follower)
 
     def draw(self):
         self.read_nodes()
@@ -129,17 +130,18 @@ class simulatorWidget():
         #print "Community Detection Function"
         g = {}
         for node in self.Nodes_List:
-            g[node.id]=[]
-            #print node.id,node.followers
-            for foll in node.followers:
-                g[node.id].append(foll.id)
+            if len(node.followers) > 0:
+                g[node.id]=[]
+                #print node.id,node.followers
+                for foll in node.followers:
+                    g[node.id].append(foll.id)
+
         #print g
         graph = Graph(g,self.Nodes_List,self.canvas)
         graph.find_community()
         graph.change_color()
 
     def reset(self):
-
         for node in self.Nodes_List:
             self.canvas.delete(node.itemNo)
             for edges in node.lineItemNo:
@@ -193,7 +195,7 @@ class Graph():
             if None not in community.descendants:
                 parent = community.parent
                 i = self.Node_List[parent].itemNo
-                self.delete(i)
+                self.canvas.delete(i)
                 self.Node_List[parent].draw(self.canvas,6*len(community.descendants))
                 i = self.Node_List[parent].itemNo
                 self.canvas.itemconfig(i,fill=a)
