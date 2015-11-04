@@ -4,6 +4,7 @@ Created on March 17, 2015
 @author: sagar jha
 '''
 PARTICLE_RADIUS = 10
+H_PARTICLE_RADIUS = PARTICLE_RADIUS/2
 class Node:
     '''
     classdocs
@@ -37,7 +38,7 @@ class Node:
     def draw_edges(self,canvas):
         if len(self.followers) <> 0:
             for eNode in self.followers:
-                itemNo = canvas.create_line(self.position[0],self.position[1],eNode.position[0],eNode.position[1],fill="red")
+                itemNo = canvas.create_line(self.position[0]+H_PARTICLE_RADIUS,self.position[1]+H_PARTICLE_RADIUS,eNode.position[0]+H_PARTICLE_RADIUS,eNode.position[1]+H_PARTICLE_RADIUS,fill="red")
                 self.lineItemNo.append(itemNo)
 
 

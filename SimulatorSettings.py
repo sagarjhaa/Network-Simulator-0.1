@@ -188,6 +188,12 @@ class Graph():
 
 
     def change_color(self):
+
+        for node in self.Node_List:
+            item = node.itemNo
+            self.canvas.itemconfig(item,fill="white")
+
+
         for community in self.total_community:
             r = lambda: rd.randint(0,255)
             a = ('#%02X%02X%02X' % (r(),r(),r()))
