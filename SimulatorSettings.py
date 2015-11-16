@@ -200,9 +200,11 @@ class Graph():
 
             if None not in community.descendants:
                 parent = community.parent
+
                 i = self.Node_List[parent].itemNo
                 self.canvas.delete(i)
-                self.Node_List[parent].draw(self.canvas,6*len(community.descendants))
+                self.Node_List[parent].drawRectangle(self.canvas) #,6*len(community.descendants)
+
                 i = self.Node_List[parent].itemNo
                 self.canvas.itemconfig(i,fill=a)
 

@@ -1,29 +1,13 @@
-__author__ = 'sjha1'
+from Tkinter import *
 
+master = Tk()
 
-import pymongo
+w = Canvas(master, width=1000, height=1000)
+w.pack()
 
-conn = pymongo.MongoClient("localhost",27017)
+#w.create_line(0, 0, 200, 100)
+#w.create_line(0, 100, 200, 0, fill="red", dash=(4, 4))
 
-db = conn['school']
-coll = db['students']
-doc = coll.find({})
+w.create_polygon(609, 416 ,614 ,416, 614, 421 ,609, 421, fill="blue")
 
-
-for eachdoc in doc:
-    for key,value in eachdoc.items():
-
-        #coll.up
-
-        if key == "scores":
-            scores = value
-            i = 2
-            j = 3
-            if scores[i]["score"] < scores[j]["score"]:
-                #print scores[i]["score"],scores[j]["score"]
-                scores.pop(i)
-            else:
-                scores.pop(j)
-            print scores
-
-        #print eachdoc[key],value
+mainloop()

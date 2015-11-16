@@ -30,6 +30,21 @@ class Node:
             self.itemNo = canvas.create_oval(self.position[0],self.position[1],self.position[0]+radius,
                                              self.position[1] + radius,fill=self.color)
 
+    def drawRectangle(self,canvas):
+        x1 = self.position[0]
+        y1 = self.position[1]
+
+        x2 = x1 + 20
+        y2 = y1
+
+        x3 = x2
+        y3 = y2 + 20
+
+        x4 = x1
+        y4 = y1 + 20
+
+        self.itemNo = canvas.create_polygon(x1,y1,x2,y2,x3,y3,x4,y4,fill = self.color)
+
 #Update Coordinate
     def update(self,canvas):
         canvas.coords(self.itemNo,self.position[0],self.position[1],self.position[0]+PARTICLE_RADIUS,self.position[1]+PARTICLE_RADIUS)
