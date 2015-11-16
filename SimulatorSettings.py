@@ -128,18 +128,26 @@ class simulatorWidget():
 
     def commDetection(self):
         #print "Community Detection Function"
-        g = {}
-        for node in self.Nodes_List:
-            if len(node.followers) > 0:
-                g[node.id]=[]
-                #print node.id,node.followers
-                for foll in node.followers:
-                    g[node.id].append(foll.id)
+        threshold = self.txt_commDetect.get()
+        try:
+            threshold = int(threshold)
+            if threshold > 0 and type(threshold) == int:
+                g = {}
+                for node in self.Nodes_List:
+                    if len(node.followers) > 0:
+                        g[node.id]=[]
+                        #print node.id,node.followers
+                        for foll in node.followers:
+                            g[node.id].append(foll.id)
 
-        #print g
-        graph = Graph(g,self.Nodes_List,self.canvas)
-        graph.find_community()
-        graph.change_color()
+                #print g
+                graph = Graph(g,self.Nodes_List,self.canvas,threshold)
+                graph.find_community()
+                graph.change_color()
+            #else:
+            #    print "Enter positive threshold"
+        except:
+            print "Enter positive threshold"
 
     def reset(self):
         for node in self.Nodes_List:
@@ -149,13 +157,14 @@ class simulatorWidget():
         self.Nodes_List = []
 
 class Graph():
-    def __init__(self,g,Node_List,canvas):
+    def __init__(self,g,Node_List,canvas,threshold):
         self.g = g
         self.total_community = []
         self.weights = []
         self.keys = []
         self.Node_List = Node_List
         self.canvas = canvas
+        self.threshold = threshold
 
     def max_weight(self):
         self.weights = []
@@ -177,15 +186,14 @@ class Graph():
         while len(self.g.keys()) <> 0:
             node = self.max_weight()
             self.delete(node)
-            self.c = Community(node)
+            self.c = Community(node,self.threshold)
             while self.c.members(self.g):
                 node = self.max_weight()
                 self.c.add_descendants(node)
                 self.delete(node)
             self.total_community.append(self.c)
-            #print self.c
+            print self.c
         print "Completed finding community"
-
 
     def change_color(self):
 
@@ -214,8 +222,8 @@ class Graph():
                     self.canvas.itemconfig(i,fill=a)
 
             else:
-                print "sagar ", community
-
+                pass
+                #print "sagar ", community
 
     def delete(self,node):
         try:
@@ -228,11 +236,12 @@ class Graph():
         return self.g[node]
 
 class Community():
-    threshold = 3
-    def __init__(self,parent):
+    #threshold = 3
+    def __init__(self,parent,threshold):
         self.parent = parent
         self.descendants =  []
-        self.threshold = 3
+        self.threshold = threshold
+
     def __str__(self):
         string = "Parent: "+str(self.parent)+ " Decendents: " +str(self.descendants)
         return string
