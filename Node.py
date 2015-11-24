@@ -25,7 +25,7 @@ class Node:
     def draw(self,canvas,radius=0):
         if radius == 0:
             self.itemNo = canvas.create_oval(self.position[0],self.position[1],self.position[0]+PARTICLE_RADIUS,
-                                             self.position[1]+PARTICLE_RADIUS,fill=self.color)
+                                             self.position[1]+PARTICLE_RADIUS,fill=self.color,tags = (self.position[0],self.position[1]))
         else:
             self.itemNo = canvas.create_oval(self.position[0],self.position[1],self.position[0]+radius,
                                              self.position[1] + radius,fill=self.color)
@@ -49,13 +49,11 @@ class Node:
     def update(self,canvas):
         canvas.coords(self.itemNo,self.position[0],self.position[1],self.position[0]+PARTICLE_RADIUS,self.position[1]+PARTICLE_RADIUS)
 
-
     def draw_edges(self,canvas):
         if len(self.followers) <> 0:
             for eNode in self.followers:
                 itemNo = canvas.create_line(self.position[0]+H_PARTICLE_RADIUS,self.position[1]+H_PARTICLE_RADIUS,eNode.position[0]+H_PARTICLE_RADIUS,eNode.position[1]+H_PARTICLE_RADIUS,fill="red")
                 self.lineItemNo.append(itemNo)
-
 
     # string method for particles
     def __str__(self):

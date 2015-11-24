@@ -221,7 +221,8 @@ class MainCanvas(object):
 
                 self.polygon_dict[self.tempid].append([min(tempXlist),max(tempXlist)])
                 self.polygon_dict[self.tempid].append([min(tempYlist),max(tempYlist)])
-                #print self.polygon_dict[self.tempid]
+                self.polygon_dict[self.tempid].append(tempXYlist)
+                #print self.tempid,self.polygon_dict[self.tempid]
                 self.tempid +=1
 
 
@@ -368,10 +369,7 @@ class GenerateNetwork(object):
 
     def CoordinateSelection(self):
         PolyPart = rd.randrange(len(GCoordinate))
-        #print len(GCoordinate[PolyPart].parts)
         SubPolyPart = rd.randrange(len(GCoordinate[PolyPart].parts))
-        #print "PolyPart: ",PolyPart," SubPolyPart ",SubPolyPart
-        #print "Coordinate: ",GCoordinate[PolyPart].parts[SubPolyPart]
         tempXYlist = GCoordinate[PolyPart].parts[SubPolyPart]
 
         tempXlist = []

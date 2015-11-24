@@ -5,18 +5,18 @@ from constants import *
 import random as rd
 from Node import *
 import snap
+from shortestpath import *
 
 #Nodes_List = []
 COLOR_LIST = ["Red", "Green", "Blue", "White"]
 COUNTER=1
-
 
 class simulatorWidget():
     def __init__(self,master,pre_canvas):
         top = self.top = Toplevel(master)
 
         self.top.title("Simulator Settings")
-        self.top.geometry('%dx%d+%d+%d' % (300,250,10,500))
+        self.top.geometry('%dx%d+%d+%d' % (300,300,10,500))
         self.top.resizable(False,False)
         self.top.configure(background=BACKGROUND)
         self.Nodes_List = []
@@ -51,8 +51,11 @@ class simulatorWidget():
         self.btn_commDetect = Button(top,text="Detect Community",background=BACKGROUND,command=self.commDetection)
         self.btn_commDetect.grid(row=4,column=0,sticky=(N,W),padx=10,pady=10)
 
-        self.readButton = Button(top,text="Reset",command=self.reset,background=BACKGROUND)
-        self.readButton.grid(row=5,column=0,sticky=(N,W),padx=10,pady=10)
+        self.resetButton = Button(top,text="Reset",command=self.reset,background=BACKGROUND)
+        self.resetButton.grid(row=5,column=0,sticky=(N,W),padx=10,pady=10)
+
+        self.shortDButton = Button(top,text="Shortest Path",background=BACKGROUND,command=self.find_short_path)
+        self.shortDButton.grid(row=5,column=1,sticky=(N,W),padx=10,pady=10)
 
     def read_nodes(self):
         self.Nodes = self.txt_nodes.get()
@@ -66,11 +69,26 @@ class simulatorWidget():
         for node in Graph.Nodes():
             polygon = rd.randint(1,len(self.pre_canvas.polygon_dict))
             direction = self.pre_canvas.polygon_dict[polygon]
-            x = rd.randint(direction[0][0],direction[0][1])
-            y = rd.randint(direction[1][0],direction[1][1])
-            p = Node(node.GetId(),[x,y], color)
+
+            if direction[0][0] == direction[0][1]:
+                direction[0][0] = direction[0][0] - 1
+            if (direction[1][0] == direction[1][1]):
+                direction[1][0] = direction[1][0] - 1
+
+            tempVar = False
+            i = 1
+            while not tempVar:
+                x = rd.randrange(direction[0][0],direction[0][1])
+                y = rd.randrange(direction[1][0],direction[1][1])
+                tempVar =  self.point_inside_polygon(x,y,direction[2])
+                i = i + 1
+                if i >25:
+                    break
+
+            #print "x ",x," y ",y,
+            p = Node(node.GetId(),[x,y],color)
             p.draw(self.canvas)
-            #print p.id,p.itemNo
+            self.canvas.tag_bind(p.itemNo, '<ButtonPress-1>', self.__showAttriInfo)
             self.Nodes_List.append(p)
 
         for node in Graph.Nodes():
@@ -149,12 +167,46 @@ class simulatorWidget():
         except:
             print "Enter positive threshold"
 
+    def point_inside_polygon(self,x,y,poly):
+
+        n = len(poly)/2
+        inside =False
+
+        p1x = poly[0]
+        p1y = poly[1]
+        #print p1x,p1y
+        for i in range(0,n+1,1):
+            p2x = poly [(i%n)*2]
+            p2y = poly [(i%n)*2 +1]
+            if y > min(p1y,p2y):
+                if y <= max(p1y,p2y):
+                    if x <= max(p1x,p2x):
+                        if p1y != p2y:
+                            xinters = (y-p1y)*(p2x-p1x)/(p2y-p1y)+p1x
+                        if p1x == p2x or x <= xinters:
+                            inside = not inside
+            p1x,p1y = p2x,p2y
+
+        return inside
+
+    def find_short_path(self):
+        dict = Generate_Dictionary_Simulation(self.Nodes_List)
+        Generate_Graph(dict)
+
     def reset(self):
         for node in self.Nodes_List:
             self.canvas.delete(node.itemNo)
             for edges in node.lineItemNo:
                 self.canvas.delete(edges)
         self.Nodes_List = []
+
+    def __showAttriInfo(self,event):
+        """
+        Show attribute information of clicked unit
+        """
+        widget_id=event.widget.find_closest(event.x, event.y)
+
+        print "x ",self.canvas.gettags(widget_id)[0]," y ",self.canvas.gettags(widget_id)[1]
 
 class Graph():
     def __init__(self,g,Node_List,canvas,threshold):
@@ -236,7 +288,6 @@ class Graph():
         return self.g[node]
 
 class Community():
-    #threshold = 3
     def __init__(self,parent,threshold):
         self.parent = parent
         self.descendants =  []

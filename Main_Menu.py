@@ -19,17 +19,6 @@ except:
 ROOT = None
 NB = None
 
-# def writeCalculations(widget,text,error):
-#     global NB
-#     if error:
-#         widget.tag_configure('error',foreground='red')
-#         widget.insert(END,text,'error')
-#         NB.select(1)
-#     else:widget.insert(END,text)
-#
-#     widget.insert(END,"\n")
-
-
 class Application:
     def __init__(self):
         global ROOT
@@ -120,7 +109,6 @@ class Application:
         writeCalculations(self.text,"Showing the Simulator controls",False,NB)
         self.obj_simualtor = Simulator(self.root,self.fr_first,self.canvas,self.text)
         self.btn_Simulator.configure(state="disabled")
-
 
 class Simulator(Application):
 
@@ -255,7 +243,6 @@ class Simulator(Application):
         self.lst_Attributes.configure(width=7)
         self.dbfdata = variables
 
-
     def __UpdateCanvas(self):
         '''This function draw the data on the canvas '''
 
@@ -282,7 +269,6 @@ class Simulator(Application):
         except Exception as e:
             writeCalculations(self.text,e,True,NB)
 
-
     def __reDraw(self):
         try:
 
@@ -303,12 +289,9 @@ class Simulator(Application):
         except:
             writeCalculations(self.text,"Please Select the file and then Visualise" ,True,NB)
 
-
     def removeFrame(self):
         for widget in self.fr_Simulator.winfo_children():
             widget.destroy()
-
-
 
     def __createSimWidget(self):
 
