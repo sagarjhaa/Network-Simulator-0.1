@@ -11,7 +11,7 @@ except:
     import Tkconstants
     import shp_reader
     import dbfload as dbf
-    from   main_canvas import MainCanvas,GenerateNetwork
+    from main_canvas import MainCanvas,GenerateNetwork
     from textAnalysis import *
     from SimulatorSettings import *
 
@@ -175,7 +175,6 @@ class Simulator(Application):
         self.btn_simWidget = Button(self.fr_sub1,text="Simulation Settings",command = self.__createSimWidget,state="disabled")
         self.btn_simWidget.grid(row=1,column=0,sticky=(E),padx=5,pady=5)
         # writeCalculations(self.text,self.__openShpfile.__doc__,True)
-
 
     def moveRight(self):
         self.canvas.delete(ALL)

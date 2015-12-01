@@ -15,6 +15,8 @@ class simulatorWidget():
     def __init__(self,master,pre_canvas):
         top = self.top = Toplevel(master)
 
+        self.initValue_Checkbox = 1
+
         self.top.title("Simulator Settings")
         self.top.geometry('%dx%d+%d+%d' % (300,300,10,500))
         self.top.resizable(False,False)
@@ -56,6 +58,30 @@ class simulatorWidget():
 
         self.shortDButton = Button(top,text="Shortest Path",background=BACKGROUND,command=self.find_short_path)
         self.shortDButton.grid(row=5,column=1,sticky=(N,W),padx=10,pady=10)
+
+        #self.varEdges = IntVar()
+        self.checkEdges = Checkbutton(top,text="Enable Edges",background=BACKGROUND
+                                      ,command = self.show_edges) #variable = self.varEdges
+        self.checkEdges.grid(row=6,column=0,sticky=(N,W),padx=10,pady=10)
+        self.checkEdges.select()
+
+    def show_edges(self):
+        if self.initValue_Checkbox:
+            #print self.initValue_Checkbox
+            try:
+                for Node in self.Nodes_List:
+                    Node.show_edges_toggle(self.canvas,self.initValue_Checkbox)
+            except:
+                pass
+            self.initValue_Checkbox = 0
+        else:
+            #print self.initValue_Checkbox
+            try:
+                for Node in self.Nodes_List:
+                    Node.show_edges_toggle(self.canvas,self.initValue_Checkbox)
+            except:
+                pass
+            self.initValue_Checkbox = 1
 
     def read_nodes(self):
         self.Nodes = self.txt_nodes.get()
@@ -109,25 +135,25 @@ class simulatorWidget():
 
         if self.Network == "GenStar":
             print "GenStar is the network with points ",self.nPoints
-            graph = snap.GenStar(snap.PNGraph, self.nPoints, True)
+            self.graph = snap.GenStar(snap.PNGraph, self.nPoints, True)
 
         if self.Network == "GenRndGnm":
             print "GenRndGnm is the network with points ",self.nPoints
-            graph = snap.GenRndGnm(snap.PNGraph,self.nPoints, self.nPoints)
+            self.graph = snap.GenRndGnm(snap.PNGraph,self.nPoints, self.nPoints)
 
         if self.Network == "GenForestFire":
             print "GenForestFire is the network with points ",self.nPoints
-            graph = snap.GenForestFire(self.nPoints, 0.5,0.5)
+            self.graph = snap.GenForestFire(self.nPoints, 0.5,0.5)
 
         if self.Network == "GenFull":
             print "GenFull is the network with points ",self.nPoints
-            graph = snap.GenFull(snap.PNGraph,self.nPoints)
+            self.graph = snap.GenFull(snap.PNGraph,self.nPoints)
 
         if self.Network == "GenCircle":
             print "GenCircle is the network with points ",self.nPoints
-            graph = snap.GenCircle(snap.PNGraph,self.nPoints,10,10)
+            self.graph = snap.GenCircle(snap.PNGraph,self.nPoints,10,10)
 
-        self.create_nodes(graph)
+        self.create_nodes(self.graph)
 
         # for node in Graph.Nodes():
         #     follower = []
@@ -146,22 +172,24 @@ class simulatorWidget():
 
     def commDetection(self):
         #print "Community Detection Function"
+        conn_degree = 4 # Change after Lu code
         threshold = self.txt_commDetect.get()
         try:
             threshold = int(threshold)
             if threshold > 0 and type(threshold) == int:
-                g = {}
-                for node in self.Nodes_List:
-                    if len(node.followers) > 0:
-                        g[node.id]=[]
-                        #print node.id,node.followers
-                        for foll in node.followers:
-                            g[node.id].append(foll.id)
-
-                #print g
-                graph = Graph(g,self.Nodes_List,self.canvas,threshold)
-                graph.find_community()
-                graph.change_color()
+                self.detectCommunity(threshold,conn_degree)
+                # g = {}
+                # for node in self.Nodes_List:
+                #     if len(node.followers) > 0:
+                #         g[node.id]=[]
+                #         #print node.id,node.followers
+                #         for foll in node.followers:
+                #             g[node.id].append(foll.id)
+                #
+                # #print g
+                # graph = Graph(g,self.Nodes_List,self.canvas,threshold)
+                # graph.find_community()
+                # graph.change_color()
             #else:
             #    print "Enter positive threshold"
         except:
@@ -207,6 +235,95 @@ class simulatorWidget():
         widget_id=event.widget.find_closest(event.x, event.y)
 
         print "x ",self.canvas.gettags(widget_id)[0]," y ",self.canvas.gettags(widget_id)[1]
+
+    def detectCommunity(self,comm_size,conn_degree):
+        communities = {}    # Declaring communities dictionary
+        k = 0               # some value k = 0
+        g = self.graph     # Getting a random graph (Network) g from initalNet()
+
+        while not g.Empty():     #checking till graph g is not empty
+            comm = []            #Declaring the community variable comm list
+            n1 = self.getMaxDegree(g) #Getting max Degree from getMaxDegree(g) into n1
+            comm += [n1]
+            while True:
+                max_id, max_degree = self.getMaxDegreetoComm(comm, g)
+                if max_degree != 0:
+                    if len(comm) < comm_size or max_degree > conn_degree:
+                        comm += [max_id]
+                    else:
+                        break
+                else:
+                    break
+            if g.GetEdges() == 0:
+                break
+            else:
+                pass
+            if g.GetNodes() < comm_size + len(comm):
+                for n in g.GetNodes():
+                    comm += [n.GetId()]
+            else:
+                pass
+            commk_name = 'community' + str(k)
+            g, commk = self.getCurrentandRestNet(comm, g)
+            communities[commk_name] = commk
+            k += 1
+
+        for c_n, c in communities.items():
+            nodelist = [node.GetId() for node in c.Nodes()]
+            print 'community:' + c_n + ' ', nodelist
+
+    def getMaxDegree(self,g):
+        n = 0
+        idi = 0
+
+        for i in g.Nodes():
+            if i.GetDeg() > n or i.GetDeg() == n:
+                n = i.GetDeg()
+                idi = i.GetId()
+            else:
+                pass
+
+        return idi
+
+    def getMaxDegreetoComm(self,comm,g):
+        n_dgree = {}
+        for n in comm:
+            n_g = g.GetNI(n)
+            for nth in range(0, n_g.GetDeg()):
+                key = n_g.GetNbrNId(nth)
+                # print str(key)+'key'
+                if key not in comm:
+                    if n_dgree.has_key(key):
+                        n_dgree[key] += 1
+                    else:
+                        n_dgree[key] = 1
+                else:
+                    pass
+        max_id = 0
+        max_degree = 0
+        for k, v in n_dgree.items():
+            if v > max_degree:
+                max_id = k
+                max_degree = v
+            else:
+                pass
+        return max_id, max_degree
+
+    def getCurrentandRestNet(self,n_list,g):
+        lis_g = []
+        NIdV1 = snap.TIntV()
+        for i in g.Nodes():
+            lis_g += [i.GetId()]
+        lis_rest = [i for i in lis_g if i not in n_list]
+        for i in lis_rest:
+            NIdV1.Add(i)
+        SubG1 = snap.GetSubGraph(g, NIdV1)
+        NIdV2 = snap.TIntV()
+        for i in n_list:
+            # print i
+            NIdV2.Add(i)
+        SubG2 = snap.GetSubGraph(g, NIdV2)
+        return SubG1, SubG2
 
 class Graph():
     def __init__(self,g,Node_List,canvas,threshold):

@@ -1,8 +1,9 @@
 '''
 Created on March 17, 2015
-
 @author: sagar jha
 '''
+from Tkinter import *
+
 PARTICLE_RADIUS = 10
 H_PARTICLE_RADIUS = PARTICLE_RADIUS/2
 class Node:
@@ -45,7 +46,7 @@ class Node:
 
         self.itemNo = canvas.create_polygon(x1,y1,x2,y2,x3,y3,x4,y4,fill = self.color)
 
-#Update Coordinate
+    #Update Coordinate
     def update(self,canvas):
         canvas.coords(self.itemNo,self.position[0],self.position[1],self.position[0]+PARTICLE_RADIUS,self.position[1]+PARTICLE_RADIUS)
 
@@ -54,6 +55,14 @@ class Node:
             for eNode in self.followers:
                 itemNo = canvas.create_line(self.position[0]+H_PARTICLE_RADIUS,self.position[1]+H_PARTICLE_RADIUS,eNode.position[0]+H_PARTICLE_RADIUS,eNode.position[1]+H_PARTICLE_RADIUS,fill="red")
                 self.lineItemNo.append(itemNo)
+
+    def show_edges_toggle(self,canvas,toggle):
+        if toggle:
+            for line in self.lineItemNo:
+                canvas.itemconfig(line,state=HIDDEN)
+        else:
+            for line in self.lineItemNo:
+                canvas.itemconfig(line,state=NORMAL)
 
     # string method for particles
     def __str__(self):
