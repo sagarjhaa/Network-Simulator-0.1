@@ -243,8 +243,8 @@ class Simulator(Application):
         '''This function draw the data on the canvas '''
 
         try:
+            self.canvas.delete(ALL)
             self.canvasConfig = [canvasWidth,canvasHeight,margin_x,margin_y]
-            print canvasWidth,canvasHeight,margin_x,margin_y
 
             self.attributeSelected =  self.variable.get()
             self.datalist = self.dbfdata[self.attributeSelected]
@@ -270,8 +270,6 @@ class Simulator(Application):
         try:
 
             self.canvasConfig = [canvasWidth,canvasHeight,margin_x,margin_y]
-            print canvasWidth,canvasHeight,margin_x,margin_y
-            #print self.canvasConfig
             for i in range(len(self.layers)):
                 if self.layers[i][0]==1:
                     temp,self.shapes,self.bbox,self.shp_type,self.root,self.attributeSelected,self.datalist,self.canvas = self.layers[i]

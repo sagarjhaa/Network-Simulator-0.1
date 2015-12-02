@@ -53,7 +53,7 @@ class Node:
     def draw_edges(self,canvas):
         if len(self.followers) <> 0:
             for eNode in self.followers:
-                itemNo = canvas.create_line(self.position[0]+H_PARTICLE_RADIUS,self.position[1]+H_PARTICLE_RADIUS,eNode.position[0]+H_PARTICLE_RADIUS,eNode.position[1]+H_PARTICLE_RADIUS,fill="red")
+                itemNo = canvas.create_line(self.position[0]+H_PARTICLE_RADIUS,self.position[1]+H_PARTICLE_RADIUS,eNode.position[0]+H_PARTICLE_RADIUS,eNode.position[1]+H_PARTICLE_RADIUS,fill="red",dash=(4,4))
                 self.lineItemNo.append(itemNo)
 
     def show_edges_toggle(self,canvas,toggle):

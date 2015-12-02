@@ -91,7 +91,7 @@ class simulatorWidget():
             print "Please enter nodes"
 
     def create_nodes(self,Graph):
-        color = rd.choice(COLOR_LIST)
+        color = "white"#rd.choice(COLOR_LIST)
         for node in Graph.Nodes():
             polygon = rd.randint(1,len(self.pre_canvas.polygon_dict))
             direction = self.pre_canvas.polygon_dict[polygon]
@@ -172,6 +172,11 @@ class simulatorWidget():
 
     def commDetection(self):
         #print "Community Detection Function"
+
+        for node in self.Nodes_List:
+            id = node.itemNo
+            self.canvas.itemconfig(id,fill="white")
+
         conn_degree = 4 # Change after Lu code
         threshold = self.txt_commDetect.get()
         try:
@@ -192,8 +197,8 @@ class simulatorWidget():
                 # graph.change_color()
             #else:
             #    print "Enter positive threshold"
-        except:
-            print "Enter positive threshold"
+        except Exception as e:
+            print e#"Enter positive threshold"
 
     def point_inside_polygon(self,x,y,poly):
 
@@ -268,9 +273,15 @@ class simulatorWidget():
             communities[commk_name] = commk
             k += 1
 
+        print "node list length",len(self.Nodes_List)
         for c_n, c in communities.items():
             nodelist = [node.GetId() for node in c.Nodes()]
-            print 'community:' + c_n + ' ', nodelist
+            if len(nodelist) == comm_size:
+                col = rd.choice(COLOR_LIST)
+                for i in nodelist:
+                    print i,self.Nodes_List[i].id
+                    self.canvas.itemconfig(self.Nodes_List[i].itemNo,fill=col)
+            print 'community: ' + c_n + ' ', nodelist
 
     def getMaxDegree(self,g):
         n = 0
