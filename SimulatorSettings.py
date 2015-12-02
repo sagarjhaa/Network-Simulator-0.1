@@ -5,7 +5,7 @@ from constants import *
 import random as rd
 from Node import *
 import snap
-from shortestpath import *
+# from shortestpath import *
 
 #Nodes_List = []
 COLOR_LIST = ["Red", "Green", "Blue", "White"]
@@ -56,8 +56,8 @@ class simulatorWidget():
         self.resetButton = Button(top,text="Reset",command=self.reset,background=BACKGROUND)
         self.resetButton.grid(row=5,column=0,sticky=(N,W),padx=10,pady=10)
 
-        self.shortDButton = Button(top,text="Shortest Path",background=BACKGROUND,command=self.find_short_path)
-        self.shortDButton.grid(row=5,column=1,sticky=(N,W),padx=10,pady=10)
+        # self.shortDButton = Button(top,text="Shortest Path",background=BACKGROUND,command=self.find_short_path)
+        # self.shortDButton.grid(row=5,column=1,sticky=(N,W),padx=10,pady=10)
 
         #self.varEdges = IntVar()
         self.checkEdges = Checkbutton(top,text="Enable Edges",background=BACKGROUND
@@ -273,15 +273,22 @@ class simulatorWidget():
             communities[commk_name] = commk
             k += 1
 
-        print "node list length",len(self.Nodes_List)
+        #print "node list length",len(self.Nodes_List)
+        f = open("results.txt",'w')
         for c_n, c in communities.items():
             nodelist = [node.GetId() for node in c.Nodes()]
             if len(nodelist) == comm_size:
                 col = rd.choice(COLOR_LIST)
                 for i in nodelist:
-                    print i,self.Nodes_List[i].id
                     self.canvas.itemconfig(self.Nodes_List[i].itemNo,fill=col)
-            print 'community: ' + c_n + ' ', nodelist
+
+            string = ",".join(str(n)+"(" + str(self.Nodes_List[n].position[0])+ "," + str(self.Nodes_List[n].position[1])+")" for n in nodelist)
+            #print string
+            string = str(c_n)[:9] + ":" + str(c_n)[9:] +" "+string + "\n"#" : " +",".join(str(n) for n in nodelist) + "\n"
+            f.write(string)
+            #print 'community: ' + c_n + ' ', nodelist
+
+        f.close()
 
     def getMaxDegree(self,g):
         n = 0

@@ -4,7 +4,7 @@ Created on March 17, 2015
 '''
 from Tkinter import *
 
-PARTICLE_RADIUS = 10
+PARTICLE_RADIUS = 7
 H_PARTICLE_RADIUS = PARTICLE_RADIUS/2
 class Node:
     '''
