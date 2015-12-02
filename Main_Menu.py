@@ -74,7 +74,7 @@ class Application:
 
         self.text = Text(f1)
         self.canvas = Canvas(self.f2)
-        self.canvas.configure(background="black")
+        self.canvas.configure(background="WHITE")
 
         self.text.pack(expand=1,fill=BOTH)
         self.canvas.pack(expand=1,fill=BOTH)
@@ -82,9 +82,6 @@ class Application:
         self.root.grid_rowconfigure(0, weight=1)
         self.root.grid_columnconfigure(0, weight=0)
         self.root.grid_columnconfigure(1, weight=3)
-
-        #rect = self.canvas.create_rectangle(10,10,1560,950,outline="#fb0")
-
 
     def __showAnalysisControls(self):
 
@@ -247,6 +244,7 @@ class Simulator(Application):
 
         try:
             self.canvasConfig = [canvasWidth,canvasHeight,margin_x,margin_y]
+            print canvasWidth,canvasHeight,margin_x,margin_y
 
             self.attributeSelected =  self.variable.get()
             self.datalist = self.dbfdata[self.attributeSelected]
@@ -272,6 +270,7 @@ class Simulator(Application):
         try:
 
             self.canvasConfig = [canvasWidth,canvasHeight,margin_x,margin_y]
+            print canvasWidth,canvasHeight,margin_x,margin_y
             #print self.canvasConfig
             for i in range(len(self.layers)):
                 if self.layers[i][0]==1:
@@ -317,8 +316,8 @@ class Analysis(Application):
         lb_Attribute = Label(self.fr_Analysis,text="Attributes",background=BACKGROUND)
         lb_Attribute.grid(row=1,column = 0,sticky=(W),pady=20)
 
-        self.var = IntVar()
-        self.c = Checkbutton(self.fr_Analysis, text="Add Layer", variable=self.var,background=BACKGROUND)
+        self.var1 = IntVar()
+        self.c = Checkbutton(self.fr_Analysis, text="Add Layer", variable=self.var1,background=BACKGROUND)
         self.c.grid(row=3,column=0,sticky=(W),pady = 10)
 
         self.lb_FileName = Label(self.fr_Analysis,text="No input file!!",anchor=W,background=BACKGROUND)
@@ -439,7 +438,7 @@ class Analysis(Application):
             self.attributeSelected =  self.variable.get()
             self.datalist = self.dbfdata[self.attributeSelected]
 
-            if self.var.get():
+            if self.var1.get():
                 self.layers.append([self.shapes,self.shp_type,self.attributeSelected,self.datalist])
                 self.Pre_canvas.addLayer(self.shapes, self.shp_type, self.attributeSelected,self.datalist)
             else:

@@ -11,6 +11,7 @@ from PolygonParts import PolygonPart
 from Node import Node
 import time
 import numpy as np
+from constants import WIDTH,HEIGHT
 
 # display parameters
 # canvasWidth, canvasHeight,margin_x, margin_y  = WIDTH, HEIGHT,100,100
@@ -149,6 +150,11 @@ class MainCanvas(object):
         self.polygon_dict = {}
         self.tempid = 1
 
+        minXX = []
+        maxXX = []
+        minYY = []
+        maxYY = []
+
         itemId = 1
         tag_count = 0
         for polygon in self.shapes:
@@ -222,15 +228,22 @@ class MainCanvas(object):
                 self.polygon_dict[self.tempid].append([min(tempXlist),max(tempXlist)])
                 self.polygon_dict[self.tempid].append([min(tempYlist),max(tempYlist)])
                 self.polygon_dict[self.tempid].append(tempXYlist)
-                #print self.tempid,self.polygon_dict[self.tempid]
-                self.tempid +=1
 
+                # self.tempid +=1
+
+                minXX.append(min(tempXlist))
+                maxXX.append(max(tempXlist))
+
+                minYY.append(min(tempYlist))
+                maxYY.append(max(tempYlist))
 
                 startIndex = polygon.partsIndex[k] #start index for our positive polygon.
                 tempPoints = polygon.points[startIndex: endPointIndex]#we get our temppoints to help use create our polygon using positive data
                 newPolygon = Polygon(tempPoints) #here we create our polygons using positve data
                 area = newPolygon.getArea() # Calculate the area
 
+                self.polygon_dict[self.tempid].append(area)
+                self.tempid +=1
 
                 if area > 0:
                     _polygon = self.mainCanvas.create_polygon(tempXYlist,activefill="#9999ff",fill=polygon.color,outline="white",tags = self.datalist[tag_count])#creating our polygon outline
@@ -239,8 +252,53 @@ class MainCanvas(object):
                     # If it is a hole, fill with the same color as the canvas background color
                     _polygon = self.mainCanvas.create_polygon(tempXYlist,fill="black",outline="red", tags = self.datalist[tag_count])
                 self.mainCanvas.tag_bind( _polygon, '<ButtonPress-1>', self.__showAttriInfo)
+
+
             self.CoordinateCollect.append(self.PolyInfo)
             tag_count += 1
+        self.mainCanvas.create_rectangle(min(minXX),min(minYY),max(maxXX),max(maxYY),outline="#fb0")
+        # #print WIDTH-360+20,HEIGHT-130+75
+        # xx1 = 10
+        # yy1 = 10
+        # xx2 = WIDTH-360+20
+        # yy2 = HEIGHT-130+75
+        #
+        # #self.mainCanvas.create_rectangle(min(minXX),min(minYY),max(maxXX),max(maxYY),outline="#fb0")
+        # x1 = min(minXX)
+        # y1 = min(minYY)
+        # x2 = max(maxXX)
+        # y2 = max(maxYY)
+        #
+        # if xx1 < x1 and yy1 < y1:
+        #     xchange = x1 - 9
+        #     ychange = y1 - 9
+        #     x1 = 10
+        #     y1 = 10
+        #     x2 = x2 - xchange
+        #     y2 = y2 - ychange
+        # print "x1y1",x1,y1
+        # print "x2y2",x2,y2
+        # self.mainCanvas.create_rectangle(x1,y1,x2,y2,outline="white")
+        #
+        # for i in self.polygon_dict.keys():
+        #     for m in range(0,len(self.polygon_dict[i][2]),2):
+        #         self.polygon_dict[i][2][m] = self.polygon_dict[i][2][m]- xchange
+        #         self.polygon_dict[i][2][m+1] = self.polygon_dict[i][2][m+1]- ychange
+        #
+        #
+        # for i in self.polygon_dict.keys():
+        #     #print self.polygon_dict[i][3],self.polygon_dict[i][2]
+        #     try:
+        #
+        #         if self.polygon_dict[i] > 0:
+        #             _polygon = self.mainCanvas.create_polygon(self.polygon_dict[i][2],activefill="#9999ff",fill=polygon.color,outline="white")#,tags = self.datalist[i])#creating our polygon outline
+        #
+        #         else:
+        #             # If it is a hole, fill with the same color as the canvas background color
+        #             _polygon = self.mainCanvas.create_polygon(self.polygon_dict[i][2],fill="black",outline="red")#, tags = self.datalist[i])
+        #     except Exception as e:
+        #         print e
+
 
     def __showAttriInfo(self,event):
         """
