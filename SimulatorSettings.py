@@ -6,6 +6,7 @@ import random as rd
 from Node import *
 import snap
 # from shortestpath import *
+import shortest_path_sim as sps
 
 #Nodes_List = []
 COLOR_LIST = ["Red", "Green", "Blue", "White"]
@@ -56,8 +57,8 @@ class simulatorWidget():
         self.resetButton = Button(top,text="Reset",command=self.reset,background=BACKGROUND)
         self.resetButton.grid(row=5,column=0,sticky=(N,W),padx=10,pady=10)
 
-        # self.shortDButton = Button(top,text="Shortest Path",background=BACKGROUND,command=self.find_short_path)
-        # self.shortDButton.grid(row=5,column=1,sticky=(N,W),padx=10,pady=10)
+        self.shortDButton = Button(top,text="Shortest Path",background=BACKGROUND,command=self.find_short_path)
+        self.shortDButton.grid(row=5,column=1,sticky=(N,W),padx=10,pady=10)
 
         #self.varEdges = IntVar()
         self.checkEdges = Checkbutton(top,text="Enable Edges",background=BACKGROUND
@@ -223,14 +224,23 @@ class simulatorWidget():
         return inside
 
     def find_short_path(self):
-        dict = Generate_Dictionary_Simulation(self.Nodes_List)
-        Generate_Graph(dict)
+        #dict = Generate_Dictionary_Simulation(self.Nodes_List)
+        #Generate_Graph(dict)
+        self.sp_Graph = sps.Graph()
+        for node in self.Nodes_List:
+            self.sp_Graph.add_node(str(node.id))
+
+        for fromNode in self.Nodes_List:
+            for toNode in fromNode.followers:
+                self.sp_Graph.add_edge(str(fromNode.id),str(toNode.id),1)
+
+        self.select_nodes = []
 
     def reset(self):
         for node in self.Nodes_List:
             self.canvas.delete(node.itemNo)
             for edges in node.lineItemNo:
-                self.canvas.delete(edges)
+                self.canvas.delete(edges[0])
         self.Nodes_List = []
 
     def __showAttriInfo(self,event):
@@ -239,7 +249,55 @@ class simulatorWidget():
         """
         widget_id=event.widget.find_closest(event.x, event.y)
 
-        print "x ",self.canvas.gettags(widget_id)[0]," y ",self.canvas.gettags(widget_id)[1]
+        #print "x ",self.canvas.gettags(widget_id)[0]," y ",self.canvas.gettags(widget_id)[1]
+        if self.canvas.gettags(widget_id)[0] == "id":
+            id = self.canvas.gettags(widget_id)[1]
+            print "Node id :",id,[i.id for i in self.Nodes_List[int(id)].followers]
+            self.canvas.itemconfig(self.Nodes_List[int(id)].itemNo,fill="red")
+            self.select_nodes.append(str(id))
+            if len(self.select_nodes) >1 and len(self.select_nodes) ==2:
+
+                if (self.select_nodes[0]==self.select_nodes[1]):
+                    idd = int(self.select_nodes[0])
+                    print self.Nodes_List[idd].lineItemNo
+                    for edge in self.Nodes_List[idd].lineItemNo:
+                        self.canvas.itemconfig(edge[0],state=NORMAL)
+
+                else:
+                    try:
+                        steps,path = sps.shortest_path(self.sp_Graph,self.select_nodes[0],self.select_nodes[1])
+                        print "Number of steps: ", steps, "Path :","-->".join(path)
+                        print "Find path between ",self.select_nodes[0],self.select_nodes[1]
+
+                        firstNode = 0
+                        for fromNode in range(len(path)-1):
+                            if firstNode == 0:
+                                self.canvas.itemconfig(self.Nodes_List[firstNode].itemNo,fill="orange")
+                                firstNode = 1
+
+                            for toNode in self.Nodes_List[int(path[fromNode])].lineItemNo:
+                                #print path[fromNode],"----->",path[fromNode+1],toNode
+                                if toNode[1] == int(path[fromNode+1]):
+                                    self.canvas.itemconfig(toNode[0],state=NORMAL)
+                                if fromNode+1 == len(path):
+                                    self.canvas.itemconfig(self.Nodes_List[firstNode+1].itemNo,fill="orange")
+
+                    except Exception as e:
+                        print "Error: No path exits to", e
+            elif len(self.select_nodes) > 2:
+                del self.select_nodes[0]
+                del self.select_nodes[0]
+                self.reset_nodes_edges()
+                id = self.select_nodes[0]
+                self.canvas.itemconfig(self.Nodes_List[int(id)].itemNo,fill="red")
+
+
+    def reset_nodes_edges(self):
+        for eachNode in self.Nodes_List:
+            self.canvas.itemconfig(eachNode.itemNo,fill="white")
+            for eachEdge in eachNode.lineItemNo:
+                self.canvas.itemconfig(eachEdge[0],state=HIDDEN)
+
 
     def detectCommunity(self,comm_size,conn_degree):
         communities = {}    # Declaring communities dictionary

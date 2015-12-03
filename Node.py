@@ -4,7 +4,7 @@ Created on March 17, 2015
 '''
 from Tkinter import *
 
-PARTICLE_RADIUS = 7
+PARTICLE_RADIUS = 10
 H_PARTICLE_RADIUS = PARTICLE_RADIUS/2
 class Node:
     '''
@@ -26,10 +26,10 @@ class Node:
     def draw(self,canvas,radius=0):
         if radius == 0:
             self.itemNo = canvas.create_oval(self.position[0],self.position[1],self.position[0]+PARTICLE_RADIUS,
-                                             self.position[1]+PARTICLE_RADIUS,fill=self.color,tags = (self.position[0],self.position[1]))
+                                             self.position[1]+PARTICLE_RADIUS,fill=self.color,tags = ("id",self.id)) #(self.position[0],self.position[1])
         else:
             self.itemNo = canvas.create_oval(self.position[0],self.position[1],self.position[0]+radius,
-                                             self.position[1] + radius,fill=self.color)
+                                             self.position[1] + radius,fill=self.color,tags=self.id)
 
     def drawRectangle(self,canvas):
         x1 = self.position[0]
@@ -54,15 +54,21 @@ class Node:
         if len(self.followers) <> 0:
             for eNode in self.followers:
                 itemNo = canvas.create_line(self.position[0]+H_PARTICLE_RADIUS,self.position[1]+H_PARTICLE_RADIUS,eNode.position[0]+H_PARTICLE_RADIUS,eNode.position[1]+H_PARTICLE_RADIUS,fill="red",dash=(4,4))
-                self.lineItemNo.append(itemNo)
+                self.lineItemNo.append((itemNo,eNode.id))
 
     def show_edges_toggle(self,canvas,toggle):
         if toggle:
             for line in self.lineItemNo:
-                canvas.itemconfig(line,state=HIDDEN)
+                canvas.itemconfig(line[0],state=HIDDEN)
         else:
             for line in self.lineItemNo:
-                canvas.itemconfig(line,state=NORMAL)
+                canvas.itemconfig(line[0],state=NORMAL)
+
+    def disable_edge(self,canvas,edgeItem):
+        self.canvas.itemconfig(edgeItem,state=HIDDEN)
+
+    def enable_edge(self,canvas,edgeItem):
+        self.canvas.itemconfig(edgeItem,state=NORMAL)
 
     # string method for particles
     def __str__(self):
