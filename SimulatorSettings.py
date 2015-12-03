@@ -269,18 +269,15 @@ class simulatorWidget():
                         print "Number of steps: ", steps, "Path :","-->".join(path)
                         print "Find path between ",self.select_nodes[0],self.select_nodes[1]
 
-                        firstNode = 0
-                        for fromNode in range(len(path)-1):
-                            if firstNode == 0:
-                                self.canvas.itemconfig(self.Nodes_List[firstNode].itemNo,fill="orange")
-                                firstNode = 1
 
+                        for fromNode in range(len(path)-1):
                             for toNode in self.Nodes_List[int(path[fromNode])].lineItemNo:
-                                #print path[fromNode],"----->",path[fromNode+1],toNode
                                 if toNode[1] == int(path[fromNode+1]):
                                     self.canvas.itemconfig(toNode[0],state=NORMAL)
-                                if fromNode+1 == len(path):
-                                    self.canvas.itemconfig(self.Nodes_List[firstNode+1].itemNo,fill="orange")
+
+                        self.canvas.itemconfig(self.Nodes_List[int(path[0])].itemNo,fill="orange")
+                        self.canvas.itemconfig(self.Nodes_List[int(path[-1])].itemNo,fill="orange")
+
 
                     except Exception as e:
                         print "Error: No path exits to", e
@@ -291,13 +288,11 @@ class simulatorWidget():
                 id = self.select_nodes[0]
                 self.canvas.itemconfig(self.Nodes_List[int(id)].itemNo,fill="red")
 
-
     def reset_nodes_edges(self):
         for eachNode in self.Nodes_List:
             self.canvas.itemconfig(eachNode.itemNo,fill="white")
             for eachEdge in eachNode.lineItemNo:
                 self.canvas.itemconfig(eachEdge[0],state=HIDDEN)
-
 
     def detectCommunity(self,comm_size,conn_degree):
         communities = {}    # Declaring communities dictionary
