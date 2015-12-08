@@ -173,7 +173,7 @@ class simulatorWidget():
 
     def commDetection(self):
         #print "Community Detection Function"
-
+        self.reset_nodes_edges()
         for node in self.Nodes_List:
             id = node.itemNo
             self.canvas.itemconfig(id,fill="white")

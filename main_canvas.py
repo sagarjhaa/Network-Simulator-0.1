@@ -1,6 +1,4 @@
-"""
-the canvas to draw the shapefile and interaction with mouse clicks
-"""
+__author__ = 'sjha1'
 from Tkinter import *
 # from constants import *
 from shp_reader import SHP_TYPE_POINT,SHP_TYPE_LINE,SHP_TYPE_POLYGON,Polygon

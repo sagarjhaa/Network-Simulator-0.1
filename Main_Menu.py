@@ -2,7 +2,6 @@ __author__ = 'sjha1'
 try:
     import tkinter as tk  # for python 3
 except:
-    #import Tkinter as tk  # for python 2
     from Tkinter import *
     import ttk as ttk
     from constants import *
@@ -20,38 +19,60 @@ ROOT = None
 NB = None
 
 class Application:
+    '''
+    This is the main Application module which creates the GUI.
+    It has two frames, first frame is for the controls.
+    Second frame is the Canvas and Calculation
+    '''
     def __init__(self):
+        '''
+        This is the initialization method of the application class
+        It is very top level of GUI
+        It returns nothing:return:
+        '''
         global ROOT
-
         self.root = Tk()
         ROOT = self.root
 
-        self.root.title("Network Simulator")
-        self.root.geometry('%dx%d+%d+%d' % (WIDTH,HEIGHT,0,0))
+        self.root.title("Network Simulator")  # Giving name of the GUI
+        self.root.geometry('%dx%d+%d+%d' % (WIDTH,HEIGHT,0,0)) # It sets the width and height of the gui to the screen size
         self.createUI()
         self.root.mainloop()
 
     def createUI(self):
+        '''
+        It Create all the controls of the GUI frame.
+        The whole GUI is divided into two frames fr_first and fr_second
+        Returns nothing but display the controls.
+        :return:
+        '''
         global NB
 
         #Divide the screen in Frames
         # We have two main Frame fr_first and fr_second
+
+        #Frame one for the Controls
         self.fr_first = LabelFrame(self.root,text = "Controls",background=BACKGROUND,highlightcolor="red",relief=RAISED)
         self.fr_first.grid(row=0,column=0,sticky="nsew")
 
+        #Frame second for the Window
         self.fr_second = LabelFrame(self.root,text="Window",background=BACKGROUND,highlightcolor="red",relief=RAISED)
         self.fr_second.grid(row=0,column=1,sticky="nsew")
 
-        #defind the controls for the fr_first
+        #Define the controls for the fr_first
+        #Create a Button Analysis
         self.btn_Analysis = Button(self.fr_first,text="Analysis",width=20,command=self.__showAnalysisControls)
         self.btn_Analysis.grid(row=0,column=0,pady=10,sticky=(W,E),padx=5)
 
+        #Create a Button Simulator
         self.btn_Simulator = Button(self.fr_first,text="Simulator",width=20,command=self.__showSimulatorControls)
         self.btn_Simulator.grid(row=0,column=1,pady=10,sticky=(W,E),padx=5)
 
         self.fr_first.grid_columnconfigure(0,weight=2)
         self.fr_first.grid_columnconfigure(1,weight=2)
 
+        #Create the style for the canvas and the textbox on the right
+        #The active element will be colored in red.
         style = ttk.Style()
 
         style.theme_create( "mystyle", parent="alt", settings={
@@ -62,6 +83,7 @@ class Application:
 
         style.theme_use("mystyle")
 
+        #Create the Notebook which set the frame for the Canvas and TextBox.
         self.nb_main = ttk.Notebook(self.fr_second)
         NB = self.nb_main
         self.nb_main.pack(expand=1,fill=BOTH)
@@ -69,11 +91,14 @@ class Application:
         f1 = Frame(self.nb_main)
         self.f2 = Frame(self.nb_main)
 
+        #Create the Canvas for drawing elements
         self.nb_main.add(self.f2,text="Canvas")
         self.nb_main.add(f1,text="Calculation")
 
+        #Create the Textbox for displaying calculations
         self.text = Text(f1)
         self.canvas = Canvas(self.f2)
+        #Set the color to White
         self.canvas.configure(background="WHITE")
 
         self.text.pack(expand=1,fill=BOTH)
@@ -84,7 +109,11 @@ class Application:
         self.root.grid_columnconfigure(1, weight=3)
 
     def __showAnalysisControls(self):
-
+        '''
+        This is a small function to show the Analysis Controls.
+        It create a object of Analysis class and hide the Simulator class
+        :return:
+        '''
         try:
             self.obj_simualtor.removeFrame()
             self.btn_Simulator.configure(state="active")
@@ -119,6 +148,8 @@ class Simulator(Application):
         self.y = 10
         self.radius = 30
         self.layers = []
+
+        self.whichButton = ""
 
         self.fr_Simulator = Frame(self.fr_first,background="pink",bd=10)
         self.fr_Simulator.grid(row=1,column=0,columnspan=2,sticky=(W,N,E),padx=5,pady=20)
@@ -174,36 +205,42 @@ class Simulator(Application):
         # writeCalculations(self.text,self.__openShpfile.__doc__,True)
 
     def moveRight(self):
+        self.whichButton = "Right"
         self.canvas.delete(ALL)
         global margin_x
         margin_x = margin_x - 100
         self.__reDraw()
 
     def moveLeft(self):
+        self.whichButton = "Left"
         self.canvas.delete(ALL)
         global margin_x
         margin_x = margin_x + 100
         self.__reDraw()
 
     def moveUp(self):
+        self.whichButton = "Up"
         self.canvas.delete(ALL)
         global margin_y
         margin_y = margin_y - 100
         self.__reDraw()
 
     def moveDown(self):
+        self.whichButton = "Down"
         self.canvas.delete(ALL)
         global margin_y
         margin_y = margin_y + 100
         self.__reDraw()
 
     def zoomOut(self):
+        self.whichButton = "ZO"
         self.canvas.delete(ALL)
         global canvasWidth
         canvasWidth = canvasWidth - 100
         self.__reDraw()
 
     def zoomIn(self):
+        self.whichButton = "ZI"
         self.canvas.delete(ALL)
         global canvasWidth
         canvasWidth =canvasWidth +  100
@@ -275,12 +312,22 @@ class Simulator(Application):
                     temp,self.shapes,self.bbox,self.shp_type,self.root,self.attributeSelected,self.datalist,self.canvas = self.layers[i]
                     self.Pre_canvas=MainCanvas(self.shapes,self.bbox,self.shp_type,self.root,self.attributeSelected,self.datalist,self.canvas,self.canvasConfig)
 
-
-            for i in range(len(self.layers)):
-                if self.layers[i][0]<>1:
-                    self.shapes,self.shp_type,self.attributeSelected,self.datalist = self.layers[i]
-                    self.Pre_canvas.addLayer(self.shapes, self.shp_type, self.attributeSelected,self.datalist)
-
+            try:
+                for Node in self.obj_simWidget.Nodes_List:
+                    if self.whichButton == "Left":
+                        Node.position[0] = Node.position[0] + 100
+                    elif self.whichButton == "Right":
+                        Node.position[0] = Node.position[0] - 100
+                    elif self.whichButton == "Up":
+                        Node.position[1] = Node.position[1] - 100
+                    elif self.whichButton == "Down":
+                        Node.position[1] = Node.position[1] + 100
+                    else:
+                        pass
+                    Node.draw(self.canvas)
+            except Exception as e:
+                print e
+                print "Issue in redrawing in simulator"
 
         except:
             writeCalculations(self.text,"Please Select the file and then Visualise" ,True,NB)
@@ -291,7 +338,7 @@ class Simulator(Application):
 
     def __createSimWidget(self):
 
-        obj_simWidget = simulatorWidget(self.root,self.Pre_canvas)
+        self.obj_simWidget = simulatorWidget(self.root,self.Pre_canvas)
 
 class Analysis(Application):
     def __init__(self,root,first_frame,canvas,text):
@@ -425,7 +472,6 @@ class Analysis(Application):
         self.lst_Attributes.configure(width=7)
         self.dbfdata = variables
 
-
     def __UpdateCanvas(self):
         '''This function draw the data on the canvas '''
 
@@ -448,7 +494,6 @@ class Analysis(Application):
 
         except Exception as e:
             writeCalculations(self.text,e ,True,NB)
-
 
     def __reDraw(self):
         try:

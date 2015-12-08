@@ -63,7 +63,6 @@ class analysisWidget(object):
             self.inputlist = inputtext.split(",")
         else:
             writeCalculations(self.textWidget,"Please enter words into the textbox!!!",True,self.NB)
-    
 
     def __searchText(self):
         """
@@ -94,7 +93,6 @@ class analysisWidget(object):
             value = self.text.similar(word)
             writeCalculations(self.textWidget,value,False,self.NB)
 
-
     def __seachCommonConText(self):
         writeCalculations(self.textWidget,"-"*100 ,False,self.NB)
         writeCalculations(self.textWidget,"Search common context" ,False,self.NB)
@@ -110,7 +108,6 @@ class analysisWidget(object):
 
         self.readTextbox()
         self.text.dispersion_plot(self.inputlist)
-
 
     def __frequencyDistribution(self):
         writeCalculations(self.textWidget,"-"*100 ,False,self.NB)

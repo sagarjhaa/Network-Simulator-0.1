@@ -1,7 +1,4 @@
-'''
-Created on March 17, 2015
-@author: sagar jha
-'''
+__author__ = 'sjha1'
 from Tkinter import *
 
 PARTICLE_RADIUS = 10
