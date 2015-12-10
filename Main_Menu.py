@@ -13,6 +13,7 @@ except:
     from main_canvas import MainCanvas,GenerateNetwork
     from textAnalysis import *
     from SimulatorSettings import *
+    import horan as hr
 
 #CONSTANTS FOR GLOBAL USE
 ROOT = None
@@ -404,6 +405,11 @@ class Analysis(Application):
         self.btn_txtAnalysis = Button(self.fr_sub1,text="Text Analysis",command = self.__createTxtAnalysis)
         self.btn_txtAnalysis.grid(row=1,column=0,sticky=(E),padx=5,pady=5)
 
+        self.btn_attention = Button(self.fr_sub1,text="Find Attention",command = self.__readfile)
+        self.btn_attention.grid(row=2,column=0,sticky=(E),padx=5,pady=5)
+
+
+
         # writeCalculations(self.text,self.__openShpfile.__doc__,True)
 
     def moveRight(self):
@@ -548,6 +554,11 @@ class Analysis(Application):
 
         except Exception as e:
             writeCalculations(self.text,e,True,NB)
+
+    def __readfile(self):
+        directory=tkFileDialog.askopenfilename(filetypes=[("CSV","*.csv")])
+        hr.read_file(self.text,directory)
+
 
 if __name__ == '__main__':
     Application()

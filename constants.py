@@ -10,7 +10,7 @@ WIDTH -= 20
 HEIGHT -= 75
 BACKGROUND = "Grey"
 
-def writeCalculations(widget,text,error,NB):
+def writeCalculations(widget,text,error,NB=None):
     if error:
         widget.tag_configure('error',foreground='red')
         widget.insert(END,text,'error')
