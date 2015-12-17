@@ -7,6 +7,7 @@ from Node import *
 import snap
 # from shortestpath import *
 import shortest_path_sim as sps
+import numpy as np
 
 #Nodes_List = []
 COLOR_LIST = ["Red", "Green", "Blue", "White"]
@@ -54,7 +55,7 @@ class simulatorWidget():
         self.btn_commDetect = Button(top,text="Detect Community",background=BACKGROUND,command=self.commDetection)
         self.btn_commDetect.grid(row=4,column=0,sticky=(N,W),padx=10,pady=10)
 
-        self.resetButton = Button(top,text="Reset",command=self.reset,background=BACKGROUND)
+        self.resetButton = Button(top,text="Reset",background=BACKGROUND,command=self.reset_nodes_edges)#self.reset)reset_nodes_edges
         self.resetButton.grid(row=5,column=0,sticky=(N,W),padx=10,pady=10)
 
         self.shortDButton = Button(top,text="Shortest Path",background=BACKGROUND,command=self.find_short_path)
@@ -65,6 +66,9 @@ class simulatorWidget():
                                       ,command = self.show_edges) #variable = self.varEdges
         self.checkEdges.grid(row=6,column=0,sticky=(N,W),padx=10,pady=10)
         self.checkEdges.select()
+
+        self.btnDiffusion = Button(top,text="Diffusion",background=BACKGROUND,command=self.diffusion)
+        self.btnDiffusion.grid(row=6,column=1,sticky=(N,W),padx=10,pady=10)
 
     def show_edges(self):
         if self.initValue_Checkbox:
@@ -289,11 +293,14 @@ class simulatorWidget():
                 self.canvas.itemconfig(self.Nodes_List[int(id)].itemNo,fill="red")
 
     def reset_nodes_edges(self):
-        for eachNode in self.Nodes_List:
-            self.canvas.itemconfig(eachNode.itemNo,fill="white")
-            for eachEdge in eachNode.lineItemNo:
-                self.canvas.itemconfig(eachEdge[0],state=HIDDEN)
-
+        try:
+            for eachNode in self.Nodes_List:
+                self.canvas.itemconfig(eachNode.itemNo,fill="black")
+                self.canvas.itemconfig(eachNode.itemNo,width= 2)
+                for eachEdge in eachNode.lineItemNo:
+                    self.canvas.itemconfig(eachEdge[0],state=HIDDEN)
+        except Exception as e:
+            print e
     def detectCommunity(self,comm_size,conn_degree):
         communities = {}    # Declaring communities dictionary
         k = 0               # some value k = 0
@@ -395,6 +402,77 @@ class simulatorWidget():
             NIdV2.Add(i)
         SubG2 = snap.GetSubGraph(g, NIdV2)
         return SubG1, SubG2
+
+    def diffusion(self):
+        '''
+        Writing process for matrix creation
+        '''
+        self.reset_nodes_edges()
+        totalNodes = len(self.Nodes_List)
+        matrix = [[0]*totalNodes for i in range(totalNodes)]
+
+        for i in range(totalNodes):
+            for j in self.Nodes_List[i].followers:
+                #print i,"--->",j
+                matrix[i][j.id]=1
+
+        x = np.matrix(matrix)
+        y = np.matrix(matrix)
+
+        print "*" * 50
+        result = x * y
+
+        for i in range(5):
+            print "*" * 50
+            print result
+            result = result * x
+
+
+#        Print all the nodes with the followers
+#        for i in range(len(self.pAll)):
+#            print self.pAll[i].id,self.pAll[i].x,self.pAll[i].y #" Follower ",self.pAll[i].follower
+
+        completed_nodes = []
+        uncomplete_nodes = []
+        widgetList = []
+
+        maxFollowers = [len(Node.followers) for Node in self.Nodes_List]
+
+        initialNode  = self.Nodes_List[maxFollowers.index(max(maxFollowers))]#rd.choice(self.pAll)
+        completed_nodes.append(initialNode)
+
+        widgetId = initialNode.itemNo
+        newwidth = 10
+        self.canvas.itemconfig(widgetId,outline="orange",width = newwidth)
+
+        for i in initialNode.followers:
+            widgetId = i.itemNo
+            self.canvas.itemconfig(widgetId,width = newwidth,outline = "red")
+            uncomplete_nodes.append(i)
+
+
+
+        #colors = ["black","grey","yellow","#f6c99a","#efc818","#c3fd53","#66cccc","#883eba","#aed3e1","#dbcbdb"]
+        while len(uncomplete_nodes) <> 0:
+
+            initialNode = uncomplete_nodes[0]
+            color = "White"
+
+            uncompleted_follower = initialNode.followers
+            for itemp in uncompleted_follower:
+                if itemp not in completed_nodes:
+
+                    widgetId = itemp.itemNo
+                    newwidth = newwidth -0.5
+                    self.canvas.itemconfig(widgetId,width = newwidth,outline = color)
+                    uncomplete_nodes.append(itemp)
+
+                   # _line=Gcanvas.create_line(initialNode.x,initialNode.y,destNode.x,destNode.y,arrow="last",fill="black",width=1)
+                   # self.itemNo.append(_line)
+
+
+            completed_nodes.append(uncomplete_nodes[0])
+            del uncomplete_nodes[0]
 
 class Graph():
     def __init__(self,g,Node_List,canvas,threshold):
