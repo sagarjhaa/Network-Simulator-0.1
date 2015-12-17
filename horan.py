@@ -40,11 +40,6 @@ def read_file(text,directory):
 
     _main_(text)
 
-# print(hashtags)
-# print("/n")
-# print(hashtag_cluster)
-
-
 def init_dic(name):
     """
     create a dictionary, with username as the
@@ -57,8 +52,6 @@ def init_dic(name):
     for i in name_set:
         new_dic[i]=0
     return new_dic
-
-
 
 def count(name,meme):
     """
@@ -76,20 +69,6 @@ def count(name,meme):
            index+=1
     return namedic
 
-#print(count(name,"Indian"))
-
-#def sum_counts(dic):
-#    """
-#    get the total times of a meme emergence
-#    ignore this function
-#    """
-#    sum=0
-#    for key in dic:
-#        sum=sum+dic[key]
-#    return sum
-
-
-
 def single_entropy_distribution(name,meme):
     """
     apply shannon entropy for a single meme for each user
@@ -105,9 +84,6 @@ def single_entropy_distribution(name,meme):
             new_dic[key]=-(float(new_dic[key])/tweets_amount)*math.log(float(new_dic[key])/tweets_amount,2)
 
     return new_dic
-
-
-
 
 def attentionOfUser(user):
     """
