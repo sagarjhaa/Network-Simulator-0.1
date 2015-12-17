@@ -408,6 +408,8 @@ class Analysis(Application):
         self.btn_attention = Button(self.fr_sub1,text="Find Attention",command = self.__readfile)
         self.btn_attention.grid(row=2,column=0,sticky=(E),padx=5,pady=5)
 
+
+
         # writeCalculations(self.text,self.__openShpfile.__doc__,True)
 
     def moveRight(self):
@@ -555,11 +557,7 @@ class Analysis(Application):
 
     def __readfile(self):
         directory=tkFileDialog.askopenfilename(filetypes=[("CSV","*.csv")])
-        try:
-            hr.read_file(self.text,directory)
-
-        except Exception as e:
-            print e
+        hr.read_file(self.text,directory)
 
 
 if __name__ == '__main__':
